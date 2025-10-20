@@ -20,11 +20,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Run Semgrep
-        uses: returntocorp/semgrep-action@v1
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          generateSarif: true
-          config: "p/ci p/javascript p/security-audit"
+          python-version: '3.x'
+
+      - name: Install Semgrep (latest)
+        run: pip install --upgrade pip && pip install semgrep==1.140.0
+
+      - name: Run Semgrep (scan all files)
+        run: |
+          semgrep scan \
+            --config p/ci \
+            --config p/javascript \
+            --config p/security-audit \
+            --sarif -o semgrep.sarif \
+            --metrics=off \
+            --timeout 0
 
       - name: Upload SARIF to code scanning
         if: always()
