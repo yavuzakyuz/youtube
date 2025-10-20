@@ -24,12 +24,7 @@ jobs:
         uses: returntocorp/semgrep-action@v1
         with:
           generateSarif: true
-          publishToken: ''
-        env:
-          SEMGREP_RULES: >-
-            p/ci         # CI best practices
-            p/javascript # JS best-practice + security rules
-            p/security-audit # broader security audit rules
+          config: "p/ci p/javascript p/security-audit"
 
       - name: Upload SARIF to code scanning
         if: always()
