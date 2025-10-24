@@ -1,13 +1,7 @@
-// Tests to drive a change in dark-light-switch to avoid redundant writes and
-// only react to theme key changes. Initially skipped; enable after code update.
-
-// Minimal DOM setup for icons
 document.body.innerHTML = `
     <div id="dark-light-switch-icon-sun" style="display:"></div>
     <div id="dark-light-switch-icon-moon" style="display:"></div>
 `;
-
-// Provide extension skeleton used by the module
 global.extension = {
     skeleton: {
         header: {
@@ -21,8 +15,6 @@ global.extension = {
         }
     }
 };
-
-
 let onChangedHandler;
 const storageData = new Map();
 global.satus = {
@@ -32,9 +24,7 @@ global.satus = {
         onchanged: jest.fn((handler) => { onChangedHandler = handler; })
     }
 };
-
 require('../../menu/skeleton-parts/dark-light-switch.js');
-
 describe('dark-light-switch onchanged behavior (drives desired change)', () => {
     beforeEach(() => {
         jest.clearAllMocks();
@@ -66,5 +56,3 @@ describe('dark-light-switch onchanged behavior (drives desired change)', () => {
         expect(satus.storage.set).not.toHaveBeenCalled();
     });
 });
-
-
