@@ -4,11 +4,17 @@ on:
   push:
     branches:
       - master
+      - refactor
       - 'feature/*'
       - ESlint
   pull_request:
     branches:
       - master
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
 
 jobs:
   lint-and-test:
@@ -25,10 +31,18 @@ jobs:
 
       - name: Install dependencies
         run: npm install --force
-      
+
       - name: Run eslint
-        run: npx eslint --config=tests/eslint_rules.config.mjs
+        run: |
+          npx eslint --config=tests/eslint_rules.config.mjs -f json -o eslint-report.json || true
         continue-on-error: true
+
+      - name: Upload ESLint JSON artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eslint-json-report
+          path: eslint-report.json
 
       # - name: Run JSLint
       #   run: npx jslint "**/*.js"

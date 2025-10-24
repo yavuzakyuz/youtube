@@ -1,0 +1,46 @@
+name: Semgrep (Code Scanning)
+
+on:
+  push:
+    branches: [ master, refactor ]
+  pull_request:
+    branches: [ master ]
+  schedule:
+    - cron: '0 3 * * 1'
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  semgrep:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Semgrep (latest)
+        run: pip install --upgrade pip && pip install semgrep==1.140.0
+
+      - name: Run Semgrep (scan all files)
+        run: |
+          semgrep scan \
+            --config p/ci \
+            --config p/javascript \
+            --config p/security-audit \
+            --sarif -o semgrep.sarif \
+            --metrics=off \
+            --timeout 0
+
+      - name: Upload SARIF to code scanning
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep.sarif
+
